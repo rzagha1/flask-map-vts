@@ -11,8 +11,8 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 
 params={ 'dbname':'texas',
         'user':'postgres',
-        'password':'original987saxet',
-        'host':'164.90.213.82',
+        'password':'vv,
+        'host':'vv',
         'port':5432
         }
 
