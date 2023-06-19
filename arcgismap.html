@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Display a map</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css" />
+<script src="https://js.arcgis.com/4.27/"></script>
+<style>
+    html,
+    body,
+    #viewDiv {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+</style>
+</head>
+<body>
+<div id="viewDiv"></div>
+<script>
+    require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/FeatureLayer",
+        "esri/layers/VectorTileLayer",
+        "esri/layers/GeoJSONLayer"
+    ], function(Map, MapView, FeatureLayer, VectorTileLayer,GeoJSONLayer) {
+        var map = new Map({
+            basemap: "gray-vector"
+        });
+
+        var view = new MapView({
+            container: "viewDiv",
+            map: map,
+            center: [-85, 30],
+            zoom: 4
+        });
+        var popupTemplate = {
+            title: "{name}",
+            content: [{
+                type: "fields",
+                fieldInfos: [
+                {
+                    fieldName: "name",
+                    label: "Name",
+                    visible: true
+                }
+                ]
+            }]
+            };
+
+        var featureLayer = new GeoJSONLayer({
+            url: "http://127.0.0.1:5000/layer_geojson",
+            popupTemplate: popupTemplate
+            });
+
+        map.add(featureLayer);
+        featureLayer.on("click", function(event) {
+            var feature = event.graphic;
+            console.log(feature.attributes.name);
+        });
+            
+        const vLayer = new VectorTileLayer({
+          style: {
+            id: 'customStyle',
+            version: 8,
+            sources: {
+              b: {
+                type: 'vector',
+                tiles: ['http://127.0.0.1:5000/tiles/{z}/{x}/{y}.pbf']
+              }
+            },
+            layers: [
+              {
+                id: 'test2',
+                type: 'fill',
+                source: 'b',
+                'source-layer': 'data.counties',
+                paint: {
+                  'fill-color': 'red',
+                  'fill-opacity': 0.2,
+                  'fill-outline-color': 'blue'
+                }
+              }
+            ]
+          }
+        });
+
+      //map.add(vLayer);
+
+
+      const works = new VectorTileLayer({
+          style: {
+            id: 'customStyle',
+            version: 8,
+            sources: {
+              a: {
+                type: 'vector',
+                tiles: ['http://164.90.213.82:7800/data.counties_all/{z}/{x}/{y}.pbf']
+              }
+            },
+            layers: [
+              {
+                id: 'test',
+                type: 'fill',
+                source: 'a',
+                'source-layer': 'data.counties_all',
+                paint: {
+                  'fill-color': 'red',
+                  'fill-opacity': 0.2,
+                  'fill-outline-color': 'blue'
+                }
+              }
+            ]
+          }
+        });
+        //map.add(works);
+
+    });
+</script>
+</body>
+</html>
